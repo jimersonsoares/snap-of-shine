@@ -40,6 +40,7 @@
   --color-gold: var(--gold);
   --color-gold-deep: var(--gold-deep);
   --color-gold-soft: var(--gold-soft);
+  --color-gold-ink: var(--gold-ink);
   --color-ivory: var(--ivory);
   --color-beige: var(--beige);
   --color-nude: var(--nude);
@@ -60,6 +61,8 @@
   --gold: oklch(0.755 0.098 80);
   --gold-deep: oklch(0.645 0.11 70);
   --gold-soft: oklch(0.9 0.04 85);
+  /* Gold for text only: keeps ≥4.5:1 on ivory and beige. Surfaces keep --gold / --gold-deep. */
+  --gold-ink: oklch(0.5 0.095 66);
 
   --background: var(--ivory);
   --foreground: var(--coffee);
@@ -68,6 +71,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: var(--coffee);
   --primary: var(--gold-deep);
+  /* White text on the gold buttons (owner's choice; ~2.2–3.2:1 on the gradient). */
   --primary-foreground: oklch(0.995 0.003 85);
   --secondary: var(--beige);
   --secondary-foreground: var(--coffee);
@@ -94,6 +98,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  :focus-visible {
+    outline: 2px solid var(--gold-ink);
+    outline-offset: 3px;
+  }
+
   h1,
   h2,
   h3,
@@ -109,17 +118,91 @@
   font-size: 0.7rem;
   letter-spacing: 0.34em;
   text-transform: uppercase;
-  color: var(--gold-deep);
+  color: var(--gold-ink);
+}
+
+/* Section kicker: a 1px champagne rule, then the label in wide-tracked gold caps. */
+@utility kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+
+  &::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    flex-shrink: 0;
+    background: #c9ad80;
+  }
+
+  @media (width >= 48rem) {
+    gap: 1rem;
+    letter-spacing: 0.34em;
+
+    &::before {
+      width: 44px;
+    }
+  }
+}
+
+/* Centered sections: mirror the rule on the right so the kicker reads symmetric. */
+@utility kicker-symmetric {
+  &::after {
+    content: "";
+    width: 28px;
+    height: 1px;
+    flex-shrink: 0;
+    background: #c9ad80;
+    /* Cancel the tracking left after the last letter so both gaps match. */
+    margin-left: -0.2em;
+  }
+
+  @media (width >= 48rem) {
+    &::after {
+      width: 44px;
+      margin-left: -0.34em;
+    }
+  }
+}
+
+/* Section titles: Cormorant 400, 36–44px on mobile and 54–66px from 768px up. */
+@utility section-title {
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  font-size: clamp(2.25rem, 1.6rem + 2.6vw, 2.75rem);
+
+  @media (width >= 48rem) {
+    font-size: calc(clamp(3.375rem, 1.9rem + 3vw, 4.125rem) * var(--section-title-scale, 1));
+  }
+}
+
+/* Slightly smaller desktop titles for the denser two-column / text-led sections. */
+@utility section-title-compact {
+  --section-title-scale: 0.85;
+}
+
+/* Photo frame: the image zooms in gently on hover, clipped by the rounded frame. */
+@utility photo-zoom {
+  overflow: hidden;
+
+  & img {
+    transition: transform 900ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
 }
 
 @utility gold-rule {
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--gold),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
 }
 
 @utility btn-gold {
@@ -216,4 +299,62 @@
 
 @utility float-slow {
   animation: levive-float 12s ease-in-out infinite;
+}
+
+/*
+ * Text set in `text-gold-deep` reads at ~3.2:1 on ivory. Route it to the
+ * darker text gold so every component passes AA without touching its markup.
+ * Unlayered on purpose: it must win over the generated utility.
+ */
+.text-gold-deep,
+.hover\:text-gold-deep:hover {
+  color: var(--gold-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Shimmer: a soft champagne glint sweeps across gold text every few seconds.
+ * The band sits outside the text at both ends of the loop, so the reset is invisible.
+ */
+.text-shimmer {
+  background-image: linear-gradient(
+    110deg,
+    var(--gold-ink) 0%,
+    var(--gold-ink) 40%,
+    #f3e3c3 50%,
+    var(--gold-ink) 60%,
+    var(--gold-ink) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* Room for the italic overhang so the text mask doesn't clip the last letter. */
+  padding-right: 0.08em;
+  margin-right: -0.08em;
+  animation: shimmer 6s ease-in-out 0.8s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  30%,
+  100% {
+    background-position: 0 0;
+  }
 }

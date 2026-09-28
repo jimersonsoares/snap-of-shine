@@ -6,11 +6,10 @@ import {
   About,
   CarePlan,
   Contact,
-  Experience,
+  HowWeCare,
   InstagramSection,
   MainCta,
   Results,
-  Technology,
   Testimonials,
 } from "@/components/levive/Sections";
 import { Footer, FloatingActions } from "@/components/levive/Footer";
@@ -39,13 +38,12 @@ function Index() {
       <Header />
       <main>
         <Hero />
-        <Experience />
-        <Treatments />
-        <Technology />
+        <About />
         <CarePlan />
+        <Treatments />
+        <HowWeCare />
         <Results />
         <Testimonials />
-        <About />
         <MainCta />
         <InstagramSection />
         <Contact />
